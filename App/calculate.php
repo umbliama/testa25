@@ -62,7 +62,7 @@ class Calculate
 
         if ($tarif == null) {
             $services_price = $this->getServicesPrice();
-            return $price + $services_price;
+            return $price * $this->days + $services_price;
         } elseif ($this->days > 0) {
             $product_price = $this->getProductPrice($price, $tarif);
             $services_price = $this->getServicesPrice();
