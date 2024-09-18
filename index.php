@@ -1,6 +1,11 @@
 <?php
-require_once 'App/Infrastructure/sdbh.php'; use sdbh\sdbh;
-$dbh = new sdbh();
+require_once 'App/Infrastructure/DatabaseAdapter.php';
+
+$config = require __DIR__ . '/App/Infrastructure/config.php';
+$databaseAdapter = new \App\Infrastructure\DatabaseAdapter($config);
+
+
+
 ?>
 <html>
 <head>
