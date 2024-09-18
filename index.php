@@ -15,6 +15,8 @@ $databaseAdapter = new \App\Infrastructure\DatabaseAdapter($config);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
         crossorigin="anonymous">
     <link href="assets/css/style.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css">
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         crossorigin="anonymous"></script>
 </head>
@@ -46,8 +48,22 @@ $databaseAdapter = new \App\Infrastructure\DatabaseAdapter($config);
                         </select>
                     <?php } ?>
 
+
+                    <div class="mt-1">
+
+                        <p>Выберите даты</p>
+                        <label for="from">От</label>
+                        <input type="text" id="from" name="from">
+                        <label for="to">До</label>
+                        <input type="text" id="to" name="to">
+
+                    </div>
+
                     <label for="customRange1" class="form-label" id="count">Количество дней:</label>
-                    <input type="number" name="days" class="form-control" id="customRange1" min="1" max="30">
+
+                    <input  type="number" id="days" name="days" class="form-control" min="1" max="30">
+
+
 
                     <?php $services = unserialize($databaseAdapter->getRows('a25_settings', ['set_key' => 'services'], 0, 1, 'id')[0]['set_value']);
                     if (is_array($services)) {
@@ -74,9 +90,9 @@ $databaseAdapter = new \App\Infrastructure\DatabaseAdapter($config);
                 <div class="d-flex">
                     <h5>Итоговая стоимость: <span id="total-price"></span></h5>
 
-                    <span data-bs-toggle="tooltip" id="tooltip" data-bs-html="true" data-bs-placement="top"
-                        title=""> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                            fill="currentColor" class="bi bi-question-circle" viewBox="0 0 16 16">
+                    <span data-bs-toggle="tooltip" id="tooltip" data-bs-html="true" data-bs-placement="top" title="">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-question-circle" viewBox="0 0 16 16">
                             <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"></path>
                             <path
                                 d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286m1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94">
@@ -88,8 +104,60 @@ $databaseAdapter = new \App\Infrastructure\DatabaseAdapter($config);
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://code.jquery.com/ui/1.14.0/jquery-ui.js"></script>
+
     <script>
         $(document).ready(function () {
+
+            //Календарь
+
+            $("#from").datepicker({
+                altField: "#alternate",
+                altFormat: "DD, d MM, yy",
+                minDate: new Date(),
+                maxDate: "+60D",
+                onSelect: function (selected) {
+                    $("#to").datepicker("option", "minDate", selected);
+                    calculateDifferenceDays();
+                }
+            });
+
+            $("#to").datepicker({
+                altField: "#alternate1",
+                altFormat: "DD, d MM, yy",
+                minDate: new Date((new Date()).getTime() + 86400000),
+                maxDate: "+60D",
+                onSelect: function (selected) {
+                    $("#from").datepicker("option", "maxDate", selected);
+                    calculateDifferenceDays();
+                }
+            });
+
+            function getDate(element) {
+                var date;
+                try {
+                    date = $.datepicker.parseDate(dateFormat, element.value);
+                } catch (error) {
+                    date = null;
+                }
+
+                return date;
+            }
+
+            // Метод подсчета дней из выбранного диапазона 
+            function calculateDifferenceDays() {
+                var date1 = $('#from').datepicker('getDate');
+                var date2 = $('#to').datepicker('getDate');
+                var diff = 0;
+                if (date1 && date2) {
+                    diff = Math.floor((date2.getTime() - date1.getTime()) / 86400000);
+                }
+                $('#days').val(diff);
+            }
+
+
+
 
             //Инициализация bootstap tooltip
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
