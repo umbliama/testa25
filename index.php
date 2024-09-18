@@ -28,24 +28,24 @@ $databaseAdapter = new \App\Infrastructure\DatabaseAdapter($config);
         <div class="col-12">
             <form action="App/calculate.php" method="POST" id="form">
 
-                <?php $products = $dbh->make_query('SELECT * FROM a25_products');
-                if (is_array($products)) { ?>
-                    <label class="form-label" for="product">Выберите продукт:</label>
-                    <select class="form-select" name="product" id="product">
-                        <?php foreach ($products as $product) {
-                            $name = $product['NAME'];
-                            $price = $product['PRICE'];
-                            $tarif = $product['TARIFF'];
-                            ?>
-                            <option value="<?= $product['ID']; ?>"><?= $name; ?></option>
-                        <?php } ?>
-                    </select>
-                <?php } ?>
+            <?php $products = $databaseAdapter->getProducts();
+                    if (is_array($products)) { ?>
+                        <label class="form-label" for="product">Выберите продукт:</label>
+                        <select class="form-select" name="product" id="product">
+                            <?php foreach ($products as $product) {
+                                $name = $product['NAME'];
+                                $price = $product['PRICE'];
+                                $tarif = $product['TARIFF'];
+                                ?>
+                                <option value="<?= $product['ID']; ?>"><?= $name; ?></option>
+                            <?php } ?>
+                        </select>
+                    <?php } ?>
 
                 <label for="customRange1" class="form-label" id="count">Количество дней:</label>
                 <input type="number" name="days" class="form-control" id="customRange1" min="1" max="30">
 
-                <?php $services = unserialize($dbh->mselect_rows('a25_settings', ['set_key' => 'services'], 0, 1, 'id')[0]['set_value']);
+                <?php $services = unserialize($databaseAdapter->getRows('a25_settings', ['set_key' => 'services'], 0, 1, 'id')[0]['set_value']);
                 if (is_array($services)) {
                     ?>
                     <label for="customRange1" class="form-label">Дополнительно:</label>
