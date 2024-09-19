@@ -14,7 +14,7 @@ class sdbh
 
     function __construct(array $settings = [])
     {
-        $this->port = $settings['host'] ?: 3306;
+        $this->port = $settings['port'] ?: 3306;
         $this->host = $settings['host'] ?: 'localhost';
         $this->dbname = $settings['dbname'] ?: 'test_a25';
         $this->user = $settings['user'] ?: 'root';
